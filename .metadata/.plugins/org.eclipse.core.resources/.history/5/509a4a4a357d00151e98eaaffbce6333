@@ -1,0 +1,111 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+public class MinCut {
+	class Vertex {
+		int val;
+		List<Vertex> adj;
+		Vertex (int l) {
+			val = l;
+			adj = new ArrayList<Vertex>();
+		}
+		void insertVertex(int v) {
+			Vertex vt = new Vertex(v);
+			adj.add(vt);
+		}
+		void replaceVertex(Vertex v1, Vertex v2) {
+			for (Vertex u : adj) {
+				if (u.val == v1.val) {
+					u = v2;
+				}
+			}
+		}
+		@Override
+	    public int hashCode(){
+	        return val;
+	    }
+
+	    @Override
+	    public boolean equals(Object obj){
+	    	Vertex v = (Vertex) obj;
+	    	return val == v.val? true : false;
+	    }
+	}
+	
+	public Set<Vertex> readLines(String filename) throws IOException {
+		FileReader fileReader = new FileReader(filename);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		Set<Vertex> graph = new HashSet<Vertex>();
+		String line = null;
+		while ((line = bufferedReader.readLine()) != null) {
+			line = line.trim();
+			String[] arr = line.split("\\s+");
+			Vertex v = new Vertex(Integer.parseInt(arr[0]));
+			for (int i = 1; i < arr.length; i++) {
+				int u = Integer.parseInt(arr[i]);
+				v.insertVertex(u);
+			}
+			graph.add(v);
+		}
+		bufferedReader.close();
+		
+		return graph;
+	}
+	
+	public int minCut(Set<Vertex> graph) {
+		while (graph.size() > 2) {
+			Vertex[] vertexes = pickVertex(graph);
+			Vertex a = vertexes[0];
+			Vertex b = vertexes[1];
+			for (Vertex v : b.adj) {
+				if (v.val != a.val) {
+					a.adj.add(v);
+					v.replaceVertex(b, a);
+				}
+				
+			}
+			while (a.adj.contains(b)) {
+				a.adj.remove(b);
+			}
+			System.out.println(graph.remove(b));
+			System.out.println("b's val " + b.val);
+			System.out.println("graph size " + graph.size());
+		}
+		List<Vertex> res = new ArrayList<Vertex>(graph);
+		return res.get(0).adj.size();
+	}
+	
+	private Vertex[] pickVertex(Set<Vertex> graph) {//two vertex have edge between
+		// TODO Auto-generated method stub
+		List<Vertex> glist = new ArrayList<Vertex>(graph);
+		Vertex[] res = new Vertex[2];
+		while (true) {
+			Random r = new Random();
+//			System.out.println("choose from graph size " + graph.size());
+			int i1 = r.nextInt(graph.size());
+			if(!glist.get(i1).adj.isEmpty()) {
+				res[0] = glist.get(i1);
+				res[1] = glist.get(i1).adj.get(0);
+				System.out.println(res[0].val);
+				System.out.println(res[1].val);
+				System.out.println();
+				return res;
+			}
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		MinCut m = new MinCut();
+		Set<Vertex> graph = m.readLines("C:\\Users\\yamgao.ORADEV\\Google Drive\\algorithm\\HW\\HW3\\kargerMinCut.txt");
+		int min_cut = m.minCut(graph);
+		System.out.println(min_cut);
+	}
+
+}

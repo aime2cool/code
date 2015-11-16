@@ -1,0 +1,69 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
+
+
+
+public class SCC {
+	class Vertex {
+		int val;
+		List<Vertex> adj;
+		int f;
+		Vertex leader;
+		Vertex(int value) {
+			val = value;
+			adj = new ArrayList<Vertex>();
+		}
+		@Override
+	    public int hashCode(){
+	        return val;
+	    }
+
+	    @Override
+	    public boolean equals(Object obj){
+	    	Vertex v = (Vertex) obj;
+	    	return val == v.val? true : false;
+	    }
+	}
+	
+	public List<Vertex> readLines(String filename) throws IOException {
+		FileReader fileReader = new FileReader(filename);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		
+		Map<Integer, Vertex> map = new HashMap<Integer, Vertex>();
+		String line = null;
+		while ((line = bufferedReader.readLine()) != null) {
+			line = line.trim();
+			String[] arr = line.split("\\s+");
+			
+			int val1 = Integer.parseInt(arr[0]);
+			int val2 = Integer.parseInt(arr[1]);
+			if (!map.containsKey(val1)) {
+				map.put(val1, new Vertex(val1));
+			}
+			if (!map.containsKey(val2)) {
+				map.put(val2, new Vertex(val2));
+			}
+			map.get(val1).adj.add(map.get(val2));
+			
+			
+		}
+		bufferedReader.close();
+		List<Vertex> graph = new ArrayList<Vertex>(map.values());
+		return graph;
+	}
+	
+	public void
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

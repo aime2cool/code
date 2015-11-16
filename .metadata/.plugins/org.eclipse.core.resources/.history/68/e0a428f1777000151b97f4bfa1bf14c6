@@ -1,0 +1,84 @@
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Inversion {
+	public int[] readLines(String filename) throws IOException {
+		FileReader fileReader = new FileReader(filename);
+		BufferedReader bufferedReader = new BufferedReader(fileReader);
+		List<Integer> lines = new ArrayList<Integer>();
+		String line = null;
+		while ((line = bufferedReader.readLine()) != null) {
+			lines.add(Integer.parseInt(line.trim()));
+		}
+		bufferedReader.close();
+		int[] res = new int[lines.size()];
+		for (int i = 0; i < lines.size(); i++) {
+			res[i] = lines.get(i);
+//			System.out.println(res[i]);
+		}
+		return res;
+	}
+
+	public int countAndSort(int[] arr, int start, int end) {
+		if (start >= end) {
+			return 0;
+		}
+		int count = 0;
+		int mid = (start + end) / 2;
+		count += countAndSort(arr, start, mid);
+		count += countAndSort(arr, mid + 1, end);
+		count += splitMergeCount(arr, start, end, mid);
+		return count;
+	}
+
+	private int splitMergeCount(int[] arr, int start, int end, int mid) {
+		int[] left = new int[mid - start + 1];
+		int[] right = new int[end - mid];
+		for (int i = 0; i < left.length; i++) {
+			left[i] = arr[start + i];
+		}
+		for (int i = 0; i < right.length; i++) {
+			right[i] = arr[mid + 1 + i];
+//			System.out.println(right[i]);
+		}
+		int count = 0;
+		int i = 0;
+		int j = 0;
+//		System.out.println(start + " " + end + " " + mid);
+		for (int k = start; k <= end; k++) {
+//			System.out.println(i + " " + left[i]);
+//			System.out.println(j + " " + right[j]);
+			if (j == right.length) {
+				arr[k] = left[i];
+				i++;
+			}
+			else if (i == left.length) {
+				arr[k] = right[j];
+				j++;
+			}
+			else if (left[i] < right[j]) {
+				arr[k] = left[i];
+				i++;
+			} else {
+				arr[k] = right[j];
+				count += mid - i + 1;
+				j++;
+			}
+
+		}
+
+		return count;
+
+	}
+
+	public static void main(String[] args) throws IOException {
+		Inversion inv = new Inversion();
+		String filename = "C:\\Users\\yamgao.ORADEV\\Google Drive\\algorithm\\HW\\HW1\\IntegerArray.txt";
+		int[] arr = inv.readLines(filename);
+		int count = inv.countAndSort(arr, 0, arr.length - 1);
+		System.out.println(count);
+	}
+}
